@@ -12,7 +12,7 @@ XML_DUMPS_PATH=$HOME/memopol-dumps/
 
 # couchdb settings
 COUCH_HOST=localhost
-COUCH_PORT=5984
+COUCH_PORT=6001
 COUCH_URL_ROOT=http://$COUCH_HOST:$COUCH_PORT
 
 # comment or remove this line when done

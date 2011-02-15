@@ -45,12 +45,12 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = os.path.join(PROJECT_PATH, "static")
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = '/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -95,6 +95,7 @@ INSTALLED_APPS = (
     'south',
     'django_extensions',
     'debug_toolbar',
+    'compress',
 )
 
 INTERNAL_IPS = ('127.0.0.1',)
@@ -112,4 +113,29 @@ DEBUG_TOOLBAR_PANELS = (
 )
 
 #CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
-COUCHDB = "http://localhost:5984"
+COUCHDB = "http://localhost:6001"
+
+#def compress_cfg(media_root, dir, output):
+#    files = os.listdir(os.path.join(media_root, dir))
+#    files.sort()
+#    return {'source_filenames': tuple(os.path.join(dir, f) for f in files), 'output_filename': output}
+#COMPRESS_CSS = {'screen': compress_cfg(MEDIA_ROOT, 'css', 'compress/screen.?.css')}
+#COMPRESS_JS  = {'all': compress_cfg(MEDIA_ROOT, 'js', 'compress/all.?.js')}
+
+COMPRESS = True
+COMPRESS_VERSION = True
+COMPRESS_AUTO = True
+
+COMPRESS_CSS = {
+  'screen': {
+    'source_filenames': tuple(os.path.join(MEDIA_ROOT, f) for f in ('css/reset.css', 'css/fluid_grid.css', 'css/main.css')),
+    'output_filename': 'static/c/screen.?.css',
+  },
+}
+
+COMPRESS_JS = {
+  'all': {
+    'source_filenames': tuple(os.path.join(MEDIA_ROOT, f) for f in ('js/ui.js', 'js/api.js')),
+    'output_filename': 'static/c/all.?.js',
+  },
+}

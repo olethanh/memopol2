@@ -3,6 +3,8 @@ from django.conf.urls.defaults import patterns, include
 from django.contrib import admin
 admin.autodiscover()
 
+from django.conf.urls.defaults import *
+
 urlpatterns = patterns('',
     # Example:
     # (r'^memopol2/', include('memopol2.foo.urls')),
