@@ -8,7 +8,8 @@ def retrieve_meps_choices():
     Dynamically retrieve MEPs ids from CouchDB to propose choices in Django.
     """
     meps = MEP.view('meps/all')
-    return ((mep.id, mep.doc['infos']['name']['full']) for mep in meps)
+    #return ((mep.id, mep.doc['infos']['name']['full']) for mep in meps)
+    return None
 
 
 class ManualTrophy(models.Model):
