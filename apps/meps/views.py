@@ -32,7 +32,6 @@ def index_groups(request):
     return direct_to_template(request, 'index.html', context)
 
 def index_countries(request):
-
     countries = list(MEP.view('meps/countries', group=True))
     countries.sort(key=lambda group: group['value']['count'], reverse=True)
 
@@ -74,22 +73,28 @@ def mep(request, mep_id):
     score_list = mep_.scores
     for score in score_list:
         score['color'] = score_to_color(int(score['value']))
-    score_list.sort(key = lambda k : k['value'])
+    score_list.sort(key = lambda k : datetime.strptime(k['date'], "%d/%m/%Y"))
     scores = [s['value'] for s in mep_.scores]
 
     if score_list:
         try:
+            import numpy
             import matplotlib
             matplotlib.use("Agg")
             from matplotlib import pyplot
 
-            scores = [x['value'] for x in score_list]
             pyplot.plot(scores, 'bo')
+            a, b = numpy.polyfit(range(len(scores)), [int(x) for x in scores], 1)
+            pyplot.plot([a*int(x) + b for x in range(len(scores))])
+            pyplot.legend(('Scores', 'Mediane'), 'best', shadow=True)
             pyplot.plot(scores)
             pyplot.axis([0, len(scores) - 1, 0, 102])
-            print dir(mep_)
-            pyplot.xlabel("%s" % (mep_.infos['name']['full']))
+            pyplot.title("%s - Votes notes evolution over time" % (mep_.infos['name']['full']))
+            pyplot.xticks(range(len(scores)), [k['date'] for k in score_list])
+            pyplot.xlabel("Votes dates")
+            pyplot.ylabel("Scores on votes")
             pyplot.savefig(realpath("./memopol2/%simg/trends/meps/%s-scores.png" % (settings.MEDIA_URL, mep_id)), format="png")
+            pyplot.clf()
         except ImportError:
             pass
 
@@ -102,6 +107,11 @@ def mep(request, mep_id):
         'score_list' : score_list,
     }
     return direct_to_template(request, 'meps/mep.html', context)
+
+def mep_json(request, mep_id):
+    mep_ = MEP.get(mep_id)
+    jsonstr = simplejson.dumps(dict(mep_), indent=4, use_decimal=True)
+    return HttpResponse(jsonstr)
 
 def mep_raw(request, mep_id):
     mep_ = MEP.get(mep_id)
