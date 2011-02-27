@@ -58,7 +58,7 @@ class ViewsTest(TestCase):
         """
         response = self.client.get(reverse("meps:mep", args=('AlbertDess',)))
         self.failUnlessEqual(repr(response.context['mep']['cv']['position'][-1]), 'u"M\\xe9daill\\xe9 de l\'ordre bavarois du M\\xe9rite (2007)."')
-        self.failUnlessEqual(str(response.context['mep']['contact']['address'][0]['street']), '60, rue Wiertz')
+        self.failUnlessEqual(str(response.context['mep']['contact']['address']['Bruxelles']['street']), '60, rue Wiertz')
         self.failUnlessEqual(repr(response.context['positions']), "[]")
         self.failUnlessEqual(repr(response.context['visible_count']), "0")
 
