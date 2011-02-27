@@ -1,11 +1,10 @@
 # Create your views here.
 
 from django.shortcuts import render_to_response
-from forms import QueryForm
-
 from django.views.generic.simple import direct_to_template
 
 from meps.models import MEP
+from forms import QueryForm
 
 def query(request):
     form = QueryForm(request.GET)
