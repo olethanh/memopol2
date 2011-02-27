@@ -113,7 +113,7 @@ def mep_json(request, mep_id):
     jsonstr = simplejson.dumps(dict(mep_), indent=4, use_decimal=True)
     return HttpResponse(jsonstr, content_type="application/json")
 
-def mep_raw(request, mep_id):
+def mep_structure(request, mep_id):
     mep_ = MEP.get(mep_id)
     jsonstr = simplejson.dumps(dict(mep_), indent=4, use_decimal=True)
     context = {
@@ -121,7 +121,7 @@ def mep_raw(request, mep_id):
         'mep': mep_,
         'jsonstr': jsonstr,
     }
-    return direct_to_template(request, 'meps/mep_raw.html', context)
+    return direct_to_template(request, 'meps/mep_structure.html', context)
 
 def mep_addposition(request, mep_id):
     if not request.is_ajax():

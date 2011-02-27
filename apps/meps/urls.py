@@ -11,7 +11,7 @@ urlpatterns = patterns('',
     url(r'^group/(?P<group>[a-zA-Z/-]+)/$', views.index_by_group, name='index_by_group'),
 
     url(r'^mep/(?P<mep_id>\w+)/$', views.mep, name='mep'),
-    url(r'^mep/(?P<mep_id>\w+)/raw/$', views.mep_raw, name='mep_raw'),
+    url(r'^mep/(?P<mep_id>\w+)/structure/$', views.mep_structure, name='mep_structure'),
     url(r'^mep/(?P<mep_id>\w+)/json/$', views.mep_json, name='mep_json'),
     url(r'^mep/(?P<mep_id>\w+)/addposition/$', views.mep_addposition, name='mep_addposition'),
 

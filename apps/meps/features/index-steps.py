@@ -19,8 +19,8 @@ def set_browser():
 
 @step(r'I access the url "(.*)"')
 def access_url(step, url):
-    response = world.browser.get(url, follow=True)
-    htmldata = unicode(response.content, "utf-8")
+    world.response = world.browser.get(url, follow=True)
+    htmldata = unicode(world.response.content, "utf-8")
     world.dom = lxml.html.fromstring(htmldata)
 
 @step(r'I see the header "(.*)"')
@@ -30,3 +30,7 @@ def see_header(step, text):
         if i.text == text:
             return
     assert False
+
+@step(r'I get a response with content type "(.*)"')
+def response_check_content_type(step, text):
+    assert_equals(world.response["Content-Type"], text)
