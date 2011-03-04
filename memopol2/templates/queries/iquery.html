@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% for mep in meps %}
+    {{ mep.mep_id }}<br/>
+{% endfor %}
+
+{% endblock %}
