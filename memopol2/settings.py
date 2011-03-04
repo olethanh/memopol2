@@ -114,6 +114,7 @@ INSTALLED_APPS = (
     'queries',
     'trends',
     'trophies',
+    'couchcfg',
     'indexer'
 )
 
