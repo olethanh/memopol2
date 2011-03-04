@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+{% if meps %}
+<h1><img class="grouplogo" src="{{ MEDIA_URL }}img/groups/eu/{{ group.code|cut:"/" }}.png" />{% trans "Members of the European Parliament" %}{% trans "from" %} {% if group.name %} {% trans "from" %} {{ group.name }}{% endif %}</h1>
+
+    <ul class="col">
+        {% for mep in meps %}
+            <li>
+                <img class="country" src="{{ MEDIA_URL }}img/countries/small/{{ mep.country_code|cut:"/" }}.png" />
+                <a href="{% url meps:mep mep.id %}">{{ mep.last }} {{ mep.first }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% endblock %}
