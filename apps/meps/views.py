@@ -13,10 +13,16 @@ from django.contrib.admin.views.decorators import staff_member_required
 
 from meps.models import MEP, Position, Group, Country
 
-def documents_list(request, queryset,  template_name='index.html', template_object_name='object', sort_func=None, sort_reverse=False):
-    print queryset.first()
-    if sort_func:
-        # djangokit doc sucks but this return a list object and is equivalent to list(queryset)
+def documents_list(request, queryset,  template_name='index.html', template_object_name='object', order_by=None):
+    #TODO  move this to couchdb kit
+    if order_by:
+        sort_reverse = False
+        if order_by[0] == '-':
+            sort_reverse = True
+            order_by = order_by[1:]
+
+        sort_func = lambda x: getattr(x, order_by)
+
         queryset = queryset.all()
         queryset.sort(key=sort_func, reverse=sort_reverse)
 
@@ -30,12 +36,10 @@ def index_names(request):
     return documents_list(request, MEP.view('meps/by_name'), template_name = 'index.html', template_object_name='meps')
 
 def index_groups(request):
-    sort_func = lambda group: group.count
-    return documents_list(request, Group.view('meps/groups', group=True), template_object_name='groups', sort_func=sort_func, sort_reverse=True)
+    return documents_list(request, Group.view('meps/groups', group=True), template_object_name='groups', order_by='-count')
 
 def index_countries(request):
-    sort_func = lambda group: group.count
-    return documents_list(request, Country.view('meps/countries', group=True), template_object_name='countries', sort_func=sort_func, sort_reverse=True)
+    return documents_list(request, Country.view('meps/countries', group=True), template_object_name='countries', order_by='-count')
 
 # TODO : Not really happy with key_queryset,but that will probably take some more refactoring in the views
 def documents_list_per_key(request, queryset, key_queryset, template_name='index.html', template_object_name='object', template_key_name='key', sort_func=None, sort_reverse=False):
