@@ -36,26 +36,31 @@ def index_countries(request):
     sort_func = lambda group: group['value']['count']
     return documents_list(request, MEP.view('meps/countries', group=True), template_object_name='countries', sort_func=sort_func, sort_reverse=True)
 
-def index_by_country(request, country_code):
-    meps_by_country = list(MEP.view('meps/by_country', key=country_code))
-    country_infos = MEP.view('meps/countries', key=country_code)
-    meps_by_country.sort(key=lambda mep: mep['last'])
+# TODO : Not really happy with key_queryset,but that will probably take some more refactoring in the views
+def documents_list_per_key(request, queryset, key_queryset, template_name='index.html', template_object_name='object', template_key_name='key', sort_func=None, sort_reverse=False):
+    if sort_func:
+        queryset = queryset.all()
+        queryset.sort(key=sort_func, reverse=sort_reverse)
 
     context = {
-        'meps': meps_by_country,
-        'country': list(country_infos)[0]['value']['name'],
+        template_object_name : queryset,
+        template_key_name: key_queryset.first()['value'],
     }
-    return direct_to_template(request, 'index.html', context)
+
+    return direct_to_template(request, template_name, context)
+
+def index_by_country(request, country_code):
+    sort_func = lambda mep: mep['last']
+    query = MEP.view('meps/by_country', key=country_code)
+    key_query = MEP.view('meps/countries', key=country_code)
+
+    return documents_list_per_key(request, query, key_query, template_object_name='meps', sort_func=sort_func, template_key_name='country')
 
 def index_by_group(request, group):
-    meps_by_group = list(MEP.view('meps/by_group', key=group))
-    group_infos = MEP.view('meps/groups', key=group)
-    meps_by_group.sort(key=lambda mep: mep['last'])
-    context = {
-        'meps': meps_by_group,
-        'group': group_infos.first()['value'],
-    }
-    return direct_to_template(request, 'meps/by_group.html', context)
+    sort_func = lambda mep: mep['last']
+    query = MEP.view('meps/by_group', key=group)
+    key_query = MEP.view('meps/groups', key=group)
+    return documents_list_per_key(request, query, key_query, template_object_name='meps', sort_func=sort_func, template_key_name='group', template_name='meps/by_group.html')
 
 def score_to_color(score):
     """
