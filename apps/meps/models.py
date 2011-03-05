@@ -10,7 +10,7 @@ class VirtualDocument(Document):
         instance.key = data['key']
         instance.value = data['value']
         for prop in instance._properties.values():
-            if prop.name in data:
+            if prop.name in data['value']:
                 value = data['value'][prop.name]
                 if value is not None:
                     value = prop.to_python(value)
