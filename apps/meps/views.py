@@ -11,9 +11,10 @@ from django.conf import settings
 from django.views.generic.simple import direct_to_template
 from django.contrib.admin.views.decorators import staff_member_required
 
-from meps.models import MEP, Position
+from meps.models import MEP, Position, Group
 
 def documents_list(request, queryset,  template_name='index.html', template_object_name='object', sort_func=None, sort_reverse=False):
+    print queryset.first()
     if sort_func:
         # djangokit doc sucks but this return a list object and is equivalent to list(queryset)
         queryset = queryset.all()
@@ -29,8 +30,8 @@ def index_names(request):
     return documents_list(request, MEP.view('meps/by_name'), template_name = 'index.html', template_object_name='meps')
 
 def index_groups(request):
-    sort_func = lambda group: group['value']['count']
-    return documents_list(request, MEP.view('meps/groups', group=True), template_object_name='groups', sort_func=sort_func, sort_reverse=True)
+    sort_func = lambda group: group.count
+    return documents_list(request, Group.view('meps/groups', wrapper=Group.wrap, group=True), template_object_name='groups', sort_func=sort_func, sort_reverse=True)
 
 def index_countries(request):
     sort_func = lambda group: group['value']['count']
