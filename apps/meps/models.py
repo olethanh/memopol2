@@ -14,6 +14,29 @@ class MEP(Document):
         from trophies.models import ManualTrophy
         return [ManualTrophy.objects.get(id=trophy_id) for trophy_id in self.trophies_ids]
 
+class Country(Document):
+    """ Virtual document to which we can wrap the result of the 'meps/country' view"""
+    name = StringProperty()
+    count = IntegerProperty()
+
+    @classmethod
+    def wrap(cls, data):
+        instance = cls()
+        instance._doc = data
+        instance.key = data['key']
+        instance.value = data['value']
+        for prop in instance._properties.values():
+            if prop.name in data:
+                value = data['value'][prop.name]
+                if value is not None:
+                    value = prop.to_python(value)
+                else:
+                    value = prop.default_value()
+            else:
+                value = prop.default_value()
+            prop.__property_init__(instance, value)
+        return instance
+
 class Group(Document):
     """ Virtual document to which we can wrap the result of the 'meps/groups' view"""
     code = StringProperty()
