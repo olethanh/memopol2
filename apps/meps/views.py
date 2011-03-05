@@ -13,31 +13,28 @@ from django.contrib.admin.views.decorators import staff_member_required
 
 from meps.models import MEP, Position
 
-def index_names(request):
-    meps_by_name = MEP.view('meps/by_name')
+def documents_list(request, queryset,  template_name='index.html', template_object_name='object', sort_func=None, sort_reverse=False):
+    if sort_func:
+        # djangokit doc sucks but this return a list object and is equivalent to list(queryset)
+        queryset = queryset.all()
+        queryset.sort(key=sort_func, reverse=sort_reverse)
+
     context = {
-        'meps': meps_by_name,
+        template_object_name : queryset,
     }
-    return direct_to_template(request, 'index.html', context)
+
+    return direct_to_template(request, template_name, context)
+
+def index_names(request):
+    return documents_list(request, MEP.view('meps/by_name'), template_name = 'index.html', template_object_name='meps')
 
 def index_groups(request):
-
-    groups = list(MEP.view('meps/groups', group=True))
-    groups.sort(key=lambda group: group['value']['count'], reverse=True)
-
-    context = {
-        'groups': groups,
-    }
-    return direct_to_template(request, 'index.html', context)
+    sort_func = lambda group: group['value']['count']
+    return documents_list(request, MEP.view('meps/groups', group=True), template_object_name='groups', sort_func=sort_func, sort_reverse=True)
 
 def index_countries(request):
-    countries = list(MEP.view('meps/countries', group=True))
-    countries.sort(key=lambda group: group['value']['count'], reverse=True)
-
-    context = {
-        'countries': countries,
-    }
-    return direct_to_template(request, 'index.html', context)
+    sort_func = lambda group: group['value']['count']
+    return documents_list(request, MEP.view('meps/countries', group=True), template_object_name='countries', sort_func=sort_func, sort_reverse=True)
 
 def index_by_country(request, country_code):
     meps_by_country = list(MEP.view('meps/by_country', key=country_code))
