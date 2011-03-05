@@ -11,10 +11,9 @@ from django.conf import settings
 from django.views.generic.simple import direct_to_template
 from django.contrib.admin.views.decorators import staff_member_required
 
-from meps.models import MEP, Position, Group
+from meps.models import MEP, Position, Group, Country
 
 def documents_list(request, queryset,  template_name='index.html', template_object_name='object', sort_func=None, sort_reverse=False):
-    print queryset.first()
     if sort_func:
         # djangokit doc sucks but this return a list object and is equivalent to list(queryset)
         queryset = queryset.all()
@@ -34,8 +33,8 @@ def index_groups(request):
     return documents_list(request, Group.view('meps/groups', wrapper=Group.wrap, group=True), template_object_name='groups', sort_func=sort_func, sort_reverse=True)
 
 def index_countries(request):
-    sort_func = lambda group: group['value']['count']
-    return documents_list(request, MEP.view('meps/countries', group=True), template_object_name='countries', sort_func=sort_func, sort_reverse=True)
+    sort_func = lambda group: group.count
+    return documents_list(request, Country.view('meps/countries', wrapper=Country.wrap, group=True), template_object_name='countries', sort_func=sort_func, sort_reverse=True)
 
 # TODO : Not really happy with key_queryset,but that will probably take some more refactoring in the views
 def documents_list_per_key(request, queryset, key_queryset, template_name='index.html', template_object_name='object', template_key_name='key', sort_func=None, sort_reverse=False):
