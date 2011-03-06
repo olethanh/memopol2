@@ -11,10 +11,17 @@ from django.conf import settings
 from django.views.generic.simple import direct_to_template
 from django.contrib.admin.views.decorators import staff_member_required
 
-from meps.models import MEP, Position, Group, Country
+from meps.models import MEP, Position
 
-def documents_list(request, queryset,  template_name='index.html', template_object_name='object', order_by=None):
-    #TODO  move this to couchdb kit
+def clone_viewresults(viewresults):
+    """ Clone a viewresults objects so we don't use its cache"""
+    #TODO  move this to couchdbkit
+    clone = viewresults.__class__(viewresults.view, **viewresults.params)
+    return clone
+
+def documents_list(request, queryset, template_name='index.html', template_object_name='object_list', order_by=None):
+    #TODO  move this to couchdbkit
+    queryset = clone_viewresults(queryset)
     if order_by:
         sort_reverse = False
         if order_by[0] == '-':
@@ -31,15 +38,6 @@ def documents_list(request, queryset,  template_name='index.html', template_obje
     }
 
     return direct_to_template(request, template_name, context)
-
-def index_names(request):
-    return documents_list(request, MEP.view('meps/by_name'), template_name = 'index.html', template_object_name='meps')
-
-def index_groups(request):
-    return documents_list(request, Group.view('meps/groups', group=True), template_object_name='groups', order_by='-count')
-
-def index_countries(request):
-    return documents_list(request, Country.view('meps/countries', group=True), template_object_name='countries', order_by='-count')
 
 # TODO : Not really happy with key_queryset,but that will probably take some more refactoring in the views
 def documents_list_per_key(request, queryset, key_queryset, template_name='index.html', template_object_name='object', template_key_name='key', sort_func=None, sort_reverse=False):
