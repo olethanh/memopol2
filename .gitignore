@@ -14,3 +14,4 @@ pip-log.txt
 *.py[co]
 pylint.out
 .tox
+memopol2/static/img/trends/*
