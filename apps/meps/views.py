@@ -34,9 +34,14 @@ def clone_viewresults(viewresults):
     clone = viewresults.__class__(viewresults.view, **viewresults.params)
     return clone
 
-def documents_list(request, queryset, template_name='index.html', template_object_name='object_list', order_by=None):
+def documents_list(request, queryset, template_name=None, template_object_name='object_list', order_by=None):
     #TODO  move this to couchdbkit
     queryset = clone_viewresults(queryset)
+
+    if not template_name:
+        model = queryset.view._wrapper.im_self
+        template_name = "%s/%s_list.html" % (model._meta.app_label, model._meta.object_name.lower())
+
     if order_by:
         sort_reverse = False
         if order_by[0] == '-':
