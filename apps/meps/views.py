@@ -1,6 +1,7 @@
 import time
 from os.path import realpath
 from datetime import datetime
+import logging
 
 import simplejson
 
@@ -12,6 +13,20 @@ from django.views.generic.simple import direct_to_template
 from django.contrib.admin.views.decorators import staff_member_required
 
 from meps.models import MEP, Position
+
+
+logger = logging.getLogger("meps.view")
+try:
+    import numpy
+    import matplotlib
+    matplotlib.use("Agg")
+    from matplotlib import pyplot
+    has_matplotlib = True
+    raise ImportError
+except ImportError:
+    has_matplotlib = False
+    logger.warning("Install matplotlib to have statistics for each MEP")
+
 
 def clone_viewresults(viewresults):
     """ Clone a viewresults objects so we don't use its cache"""
@@ -82,13 +97,7 @@ def mep(request, mep_id):
     score_list.sort(key = lambda k : datetime.strptime(k['date'], "%d/%m/%Y"))
     scores = [s['value'] for s in mep_.scores]
 
-    if score_list:
-        try:
-            import numpy
-            import matplotlib
-            matplotlib.use("Agg")
-            from matplotlib import pyplot
-
+    if score_list and has_matplotlib:
             pyplot.plot(scores, 'bo')
             a, b = numpy.polyfit(range(len(scores)), [int(x) for x in scores], 1)
             pyplot.plot([a*int(x) + b for x in range(len(scores))])
@@ -101,8 +110,6 @@ def mep(request, mep_id):
             pyplot.ylabel("Scores on votes")
             pyplot.savefig(realpath(".%simg/trends/meps/%s-scores.png" % (settings.MEDIA_URL, mep_id)), format="png")
             pyplot.clf()
-        except ImportError:
-            pass
 
     context = {
         'mep_id': mep_id,
