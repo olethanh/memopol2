@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>{% trans "MEPs by country" %}</h1>
+    {% include "map-eu.html" %}
+    <ul class="col">
+    {% for country in countries %}
+        <li>
+            <a href="{% url meps:index_by_country country.key %}">
+                <img src="{{ MEDIA_URL }}img/countries/small/{{ country.key }}.png"/>
+                {{ country.value.name }}</a>&nbsp;
+            {% blocktrans with country.value.count as count %} - {{ count }} MEPs {% endblocktrans %}
+        </li>
+    {% endfor %}
+    </ul>
+
+{% endblock %}

@@ -2,7 +2,7 @@ from django.conf.urls.defaults import patterns, url
 
 from models import MEP, Group, Country
 
-names_dict = {'queryset' : MEP.view('meps/by_name'), 'template_name' : 'index.html', 'template_object_name':'meps' }
+names_dict = {'queryset' : MEP.view('meps/by_name'), 'template_name': 'index.html', 'template_object_name':'meps'}
 groups_dict = {'queryset': Group.view('meps/groups', group=True), 'template_object_name':'groups', 'order_by':'-count'}
 countries_dict = {'queryset': Country.view('meps/countries', group=True), 'template_object_name':'countries', 'order_by':'-count'}
 
