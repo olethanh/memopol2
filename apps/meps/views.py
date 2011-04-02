@@ -1,7 +1,5 @@
 import time
-from os.path import realpath
 from datetime import datetime
-import logging
 
 import simplejson
 
@@ -13,17 +11,6 @@ from django.views.generic.simple import direct_to_template
 from django.contrib.admin.views.decorators import staff_member_required
 
 from meps.models import MEP, Position
-
-logger = logging.getLogger("meps.view")
-try:
-    import numpy
-    import matplotlib
-    matplotlib.use("Agg")
-    from matplotlib import pyplot
-    has_matplotlib = True
-except ImportError:
-    has_matplotlib = False
-    logger.warning("Install matplotlib to have statistics for each MEP")
 
 
 def index_names(request):
@@ -126,20 +113,6 @@ def mep(request, mep_id):
         score['color'] = score_to_color(int(score['value']))
     score_list.sort(key = lambda k : datetime.strptime(k['date'], "%d/%m/%Y"))
     scores = [s['value'] for s in mep_.scores]
-
-    if score_list and has_matplotlib:
-            pyplot.plot(scores, 'bo')
-            a, b = numpy.polyfit(range(len(scores)), [int(x) for x in scores], 1)
-            pyplot.plot([a*int(x) + b for x in range(len(scores))])
-            pyplot.legend(('Scores', 'Mediane'), 'best', shadow=True)
-            pyplot.plot(scores)
-            pyplot.axis([0, len(scores) - 1, 0, 102])
-            pyplot.title("%s - Votes notes evolution over time" % (mep_.infos['name']['full']))
-            pyplot.xticks(range(len(scores)), [k['date'] for k in score_list])
-            pyplot.xlabel("Votes dates")
-            pyplot.ylabel("Scores on votes")
-            pyplot.savefig(realpath(".%simg/trends/meps/%s-scores.png" % (settings.MEDIA_URL, mep_id)), format="png")
-            pyplot.clf()
 
     context = {
         'mep_id': mep_id,

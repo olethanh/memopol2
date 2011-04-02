@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import patterns, url
 
-import views
 
-urlpatterns = patterns('',
+urlpatterns = patterns('trends.views',
+    url(r'^mep/(?P<mep_id>\w+).png$', 'trends_for_mep', name='trends'),
 )
